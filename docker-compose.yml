@@ -1,0 +1,21 @@
+version: '3'
+services:
+  mongo:
+    image: mongo:latest
+    volumes: 
+      - ./server/data:/data/db
+    ports:
+      - '27017:27017'
+  api:
+    build: 
+      dockerfile: Dockerfile
+      context: ./server
+    depends_on: 
+      - mongo
+    volumes:
+      - /app/node_modules
+      - ./server:/app
+    ports:
+      - '80:5000'
+volumes: 
+  permission: 
