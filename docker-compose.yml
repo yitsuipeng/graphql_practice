@@ -12,9 +12,9 @@ services:
       context: ./server
     depends_on: 
       - mongo
-    volumes:
-      - /app/node_modules
-      - ./server:/app
+    # volumes:
+    #   - /app/node_modules
+    #   - ./server:/app
     ports:
       - '80:5000'
 volumes: 

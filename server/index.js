@@ -1,40 +1,29 @@
 // Express App Setup
 const express = require("express");
-const bodyParser = require("body-parser");
-const cors = require("cors");
+const models = require('./models');
+const { graphqlHTTP } = require('express-graphql');
+const mongoose = require('mongoose');
+const bodyParser = require('body-parser');
+const schema = require('./schema/schema');
+const result = require('dotenv').config();
 
 const app = express();
-app.use(cors());
-app.use(bodyParser.json());
-
 
 // MongoDB connect
-const { MongoClient } = require("mongodb");
-require('dotenv').config();
+mongoose.Promise = global.Promise;
+mongoose.connect(result.parsed.MONGO_URI)
+mongoose.connection
+    .once('open', () => console.log('Connected to MongoLab instance.'))
+    .on('error', error => console.log('Error connecting to MongoLab:', error));
 
-
-app.get('/api/mongo', function (req, res, next) {
-
-  const dbName = 'permission';
-  const uri = process.env.mongoURI;
-  const client = new MongoClient(uri);
-
-  client.connect()
-    .then(() => {
-      res.json({
-        isConnected: true,
-      });
-    })
-    .catch(error => {
-      console.error(error);
-      res.json({
-        isConnected: false,
-      });
-    });
-});
+app.use(bodyParser.json());
+app.use('/graphql', graphqlHTTP({
+  schema,
+  graphiql: true
+}));
 
 // Express route handlers
-app.get("/", (req, res) => {
+app.get("/", (req, res, next) => {
   res.send("Hi");
 });
 
